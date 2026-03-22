@@ -1,0 +1,392 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Omkar | Developer & Strategist</title>
+  <!-- Tailwind CSS + GSAP for high-end animations -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap');
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #ffffff;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+    .glow-on-hover:hover {
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.5), 0 0 5px rgba(99, 102, 241, 0.3);
+      transition: all 0.25s ease;
+    }
+    .cursor-glow {
+      width: 28px;
+      height: 28px;
+      background: radial-gradient(circle, rgba(99,102,241,0.5) 0%, rgba(99,102,241,0) 70%);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.08s linear;
+      opacity: 0;
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #6366f1;
+      border-radius: 10px;
+    }
+    .card-hover {
+      transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+    .card-hover:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 35px -12px rgba(0,0,0,0.2);
+    }
+    .stagger-item {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .stagger-item.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @keyframes fadeScale {
+      0% { opacity: 0; transform: scale(0.96); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .fade-scale-in {
+      animation: fadeScale 0.8s cubic-bezier(0.2, 0.9, 0.4, 1) forwards;
+    }
+    .typing-cursor::after {
+      content: '|';
+      animation: blink 1s step-end infinite;
+      margin-left: 2px;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .anime-illustration {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      border-radius: 50%;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 35px -10px rgba(99, 102, 241, 0.4);
+    }
+    .anime-illustration img {
+      mix-blend-mode: normal;
+      object-fit: cover;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+
+  <!-- Cursor Glow Effect -->
+  <div class="cursor-glow hidden md:block" id="cursorGlow"></div>
+
+  <!-- LOADING SCREEN -->
+  <div id="loadingScreen" class="fixed inset-0 bg-black z-[100] flex flex-col items-center justify-center transition-all duration-700">
+    <div class="text-center">
+      <div class="text-5xl md:text-7xl font-extrabold text-white tracking-tight mb-3 animate-pulse">MY PROFILE</div>
+      <div class="text-indigo-300 text-lg md:text-xl tracking-wide">Designed by Omkar</div>
+      <div class="mt-6 w-12 h-12 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+    </div>
+  </div>
+
+  <!-- MAIN WEBSITE CONTENT -->
+  <div id="mainContent" class="opacity-0 invisible transition-opacity duration-700">
+    
+    <!-- Back to top button -->
+    <button id="backToTop" class="fixed bottom-6 right-6 bg-indigo-600 text-white p-3 rounded-full shadow-lg z-50 opacity-0 transition-all duration-300 hover:bg-indigo-700 hover:scale-110 pointer-events-none">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
+    </button>
+
+    <!-- HERO SECTION -->
+    <section class="min-h-screen flex items-center px-6 md:px-16 lg:px-24 py-20 bg-gradient-to-br from-white via-gray-50 to-indigo-50/30">
+      <div class="max-w-7xl mx-auto w-full grid md:grid-cols-2 gap-12 items-center">
+        <div class="order-2 md:order-1 stagger-item" id="heroLeft">
+          <div class="text-4xl md:text-6xl font-black leading-tight">
+            <span class="block">Hi, I'm</span>
+            <span class="text-indigo-600">Omkar</span>
+          </div>
+          <div class="text-xl md:text-2xl font-semibold mt-4 h-16 flex items-center">
+            <span id="dynamicRole" class="typing-cursor text-indigo-500"></span>
+          </div>
+          <p id="heroBio" class="text-gray-600 mt-6 max-w-md text-lg">NDA aspirant & developer — building technology with a strategist's mindset.</p>
+          <div class="flex flex-wrap gap-4 mt-8">
+            <button id="downloadCVBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-full font-semibold transition-all shadow-md hover:shadow-xl">Download CV</button>
+            <button id="viewProjectsBtn" class="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 px-6 py-3 rounded-full font-semibold transition-all">View Projects</button>
+          </div>
+          <div class="flex gap-6 mt-8 text-gray-700">
+            <a href="https://github.com/omkardev" target="_blank" class="hover:text-indigo-600 transition"><svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.108-.775.418-1.305.762-1.604-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+            <a href="https://linkedin.com/in/omkar" target="_blank" class="hover:text-indigo-600 transition"><svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451c.979 0 1.771-.773 1.771-1.729V1.729C24 .774 23.204 0 22.225 0z"/></svg></a>
+            <a href="https://twitter.com/omkar" target="_blank" class="hover:text-indigo-600 transition"><svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.937 4.937 0 004.604 3.417 9.868 9.868 0 01-6.102 2.104c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 0021.174-11.76c0-.213-.005-.426-.014-.637A10.025 10.025 0 0024 4.557z"/></svg></a>
+          </div>
+        </div>
+        <div class="order-1 md:order-2 flex justify-center stagger-item">
+          <div class="relative w-72 h-72 md:w-96 md:h-96 anime-illustration flex items-center justify-center shadow-2xl">
+            <img src="https://i.pinimg.com/736x/8b/6b/1b/8b6b1b8b2b8b8b8b8b8b8b8b8b8b8b8b.jpg" 
+                 alt="Anime style developer illustration" 
+                 class="w-full h-full object-cover"
+                 onerror="this.src='https://cdn-icons-png.flaticon.com/512/1995/1995571.png'"
+                 loading="eager">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROLE SWITCHER -->
+    <div class="flex justify-center mt-6 mb-6 px-4">
+      <div class="bg-gray-100 p-1 rounded-full inline-flex shadow-md">
+        <button id="studentModeBtn" class="role-switch-btn px-8 py-2 rounded-full font-semibold transition-all duration-300 bg-indigo-600 text-white">🎓 Student Mode</button>
+        <button id="developerModeBtn" class="role-switch-btn px-8 py-2 rounded-full font-semibold transition-all duration-300 text-gray-700 hover:bg-gray-200">💻 Developer Mode</button>
+      </div>
+    </div>
+
+    <!-- ABOUT / WHAT DRIVES ME -->
+    <section class="px-6 md:px-16 lg:px-24 py-20 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl md:text-5xl font-bold mb-12 text-center">⚡ What Drives Me</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+          <div class="bg-gray-50 p-6 rounded-2xl shadow-md card-hover transition-all stagger-item">
+            <div class="text-indigo-500 text-4xl mb-4">🎓</div>
+            <h3 class="text-2xl font-bold">Education</h3>
+            <p class="text-gray-600 mt-2">PUC student, preparing for NDA, JEE & KCET with unwavering discipline.</p>
+          </div>
+          <div class="bg-gray-50 p-6 rounded-2xl shadow-md card-hover transition-all stagger-item">
+            <div class="text-indigo-500 text-4xl mb-4">💻</div>
+            <h3 class="text-2xl font-bold" id="skillsTitle">Skills</h3>
+            <p id="skillsDesc" class="text-gray-600 mt-2">JavaScript, React, Tailwind, Python, DSA, Problem solving & UI/UX sense.</p>
+          </div>
+          <div class="bg-gray-50 p-6 rounded-2xl shadow-md card-hover transition-all stagger-item">
+            <div class="text-indigo-500 text-4xl mb-4">🎯</div>
+            <h3 class="text-2xl font-bold">Goals</h3>
+            <p id="goalsDesc" class="text-gray-600 mt-2">Blend defense career mindset with cutting-edge tech innovation.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECT SECTION -->
+    <section class="px-6 md:px-16 lg:px-24 py-20 bg-gray-50">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl md:text-5xl font-bold mb-12 text-center">✨ Featured Projects</h2>
+        <div id="projectsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+      </div>
+    </section>
+
+    <!-- SERVICES SECTION -->
+    <section class="px-6 md:px-16 lg:px-24 py-20 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl md:text-5xl font-bold mb-12 text-center">⚙️ Services & Tools</h2>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-indigo-50 p-6 rounded-xl text-center hover:shadow-xl transition stagger-item"><div class="text-3xl mb-2">🌐</div><h3 class="font-bold">Web Development</h3><p class="text-sm">React, Tailwind, modern stacks</p></div>
+          <div class="bg-indigo-50 p-6 rounded-xl text-center hover:shadow-xl transition stagger-item"><div class="text-3xl mb-2">🎨</div><h3 class="font-bold">UI/UX Design</h3><p class="text-sm">Wireframes, interactive prototypes</p></div>
+          <div class="bg-indigo-50 p-6 rounded-xl text-center hover:shadow-xl transition stagger-item"><div class="text-3xl mb-2">📚</div><h3 class="font-bold">Student Productivity</h3><p class="text-sm">Tools for JEE/NDA prep</p></div>
+          <div class="bg-indigo-50 p-6 rounded-xl text-center hover:shadow-xl transition stagger-item"><div class="text-3xl mb-2">🤖</div><h3 class="font-bold">AI-based Tools</h3><p class="text-sm">LLM integrations, smart assistants</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section class="px-6 md:px-16 lg:px-24 py-20 bg-gray-50">
+      <div class="max-w-6xl mx-auto">
+        <h2 class="text-4xl md:text-5xl font-bold mb-12 text-center">📬 Let's Connect</h2>
+        <div class="grid md:grid-cols-2 gap-12">
+          <div class="bg-white rounded-2xl p-8 shadow-xl">
+            <form id="contactForm" action="#" method="post">
+              <div class="mb-4"><input type="text" placeholder="Full Name" class="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400" required></div>
+              <div class="mb-4"><input type="email" placeholder="Email Address" class="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400" required></div>
+              <div class="mb-4"><textarea rows="4" placeholder="Your Message" class="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400" required></textarea></div>
+              <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition">Send Message</button>
+              <p id="formFeedback" class="text-sm mt-2 text-green-600 hidden"></p>
+            </form>
+          </div>
+          <div class="bg-white rounded-2xl p-8 shadow-xl flex flex-col gap-5">
+            <div class="flex items-center justify-between flex-wrap gap-3"><span class="font-semibold">📧 Email:</span><a href="mailto:omkarmarennavaromu@gmail.com" class="text-indigo-600 break-all">omkarmarennavaromu@gmail.com</a><button onclick="copyToClipboard('omkarmarennavaromu@gmail.com')" class="bg-gray-200 px-3 py-1 rounded text-sm hover:bg-indigo-100">Copy</button></div>
+            <div class="flex items-center justify-between flex-wrap gap-3"><span class="font-semibold">📞 Phone:</span><a href="tel:+919538626167" class="text-indigo-600">+91 9538626167</a><button onclick="copyToClipboard('+919538626167')" class="bg-gray-200 px-3 py-1 rounded text-sm hover:bg-indigo-100">Copy</button></div>
+            <div class="flex gap-5 mt-2"><span class="font-semibold">🌐 Social:</span><div class="flex gap-3"><a href="#" class="hover:text-indigo-600">GitHub</a><a href="#" class="hover:text-indigo-600">LinkedIn</a><a href="#" class="hover:text-indigo-600">Twitter</a></div></div>
+            <div><span class="font-semibold">📍 Location:</span> India</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer class="text-center py-8 text-gray-500 text-sm">© 2025 Omkar — Designed with precision & passion</footer>
+  </div>
+
+  <script>
+    // LOADING SCREEN & GSAP SCROLL TRIGGER
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const loader = document.getElementById('loadingScreen');
+        const main = document.getElementById('mainContent');
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+          main.classList.remove('invisible', 'opacity-0');
+          main.classList.add('opacity-100', 'visible');
+          document.body.style.overflow = 'auto';
+          gsap.registerPlugin(ScrollTrigger);
+          gsap.utils.toArray('.stagger-item').forEach((item, i) => {
+            gsap.fromTo(item, { opacity: 0, y: 30 }, {
+              opacity: 1, y: 0, duration: 0.6, delay: i * 0.08, scrollTrigger: { trigger: item, start: "top 85%", toggleActions: "play none none none" }
+            });
+          });
+        }, 500);
+      }, 1500);
+    });
+
+    // Role data
+    const studentData = {
+      bio: "Future NDA officer & tech enthusiast, mastering both strategy and coding.",
+      skills: "Mathematics, Physics, Logical Reasoning, C++ Basics, Web Dev",
+      goals: "Crack NDA, JEE advanced, build discipline + create impactful apps for defense.",
+      projects: [
+        { title: "NDA Prep Tracker", desc: "Dashboard for daily mock tests & performance analytics.", tech: "React, Chart.js", github: "#", demo: "#" },
+        { title: "KCET Formula Sheet", desc: "Interactive flashcard app for physics & maths.", tech: "Tailwind, JS", github: "#", demo: "#" },
+        { title: "Defense Mindset Blog", desc: "Writing on leadership & tech synergy.", tech: "Next.js, MDX", github: "#", demo: "#" }
+      ]
+    };
+    const developerData = {
+      bio: "Full-stack developer & UI/UX enthusiast building modern apps with creative solutions.",
+      skills: "React, Node.js, Tailwind, Framer Motion, Python, FastAPI, AI Integrations",
+      goals: "Ship production-grade tools, open source contributions, and AI-based student tools.",
+      projects: [
+        { title: "Dev Portfolio 3D", desc: "Interactive 3D portfolio with Three.js & GSAP", tech: "Three.js, React", github: "#", demo: "#" },
+        { title: "AI Study Buddy", desc: "Chatbot for JEE prep using GPT API.", tech: "OpenAI, Flask", github: "#", demo: "#" },
+        { title: "CodeCollab", desc: "Real-time collaborative code editor.", tech: "Socket.io, Monaco", github: "#", demo: "#" }
+      ]
+    };
+
+    let currentMode = 'student';
+    const roleTexts = ["NDA Aspirant", "JEE/KCET Student", "Developer", "Problem Solver"];
+    let roleIndex = 0;
+
+    function typeRole() {
+      const el = document.getElementById('dynamicRole');
+      let currentText = roleTexts[roleIndex];
+      let i = 0;
+      el.innerHTML = '';
+      function typeChar() {
+        if (i < currentText.length) {
+          el.innerHTML += currentText.charAt(i);
+          i++;
+          setTimeout(typeChar, 100);
+        } else {
+          setTimeout(() => {
+            roleIndex = (roleIndex + 1) % roleTexts.length;
+            typeRole();
+          }, 2000);
+        }
+      }
+      typeChar();
+    }
+    typeRole();
+
+    function updateUIByMode() {
+      const data = currentMode === 'student' ? studentData : developerData;
+      document.getElementById('heroBio').innerText = data.bio;
+      document.getElementById('skillsDesc').innerText = data.skills;
+      document.getElementById('goalsDesc').innerText = data.goals;
+      document.getElementById('skillsTitle').innerHTML = currentMode === 'student' ? '🧠 Core Competencies' : '💻 Tech Stack';
+      
+      const grid = document.getElementById('projectsGrid');
+      grid.innerHTML = '';
+      data.projects.forEach(proj => {
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-2xl overflow-hidden shadow-lg card-hover transition-all p-5 border border-gray-100';
+        card.innerHTML = `
+          <h3 class="text-xl font-bold">${proj.title}</h3>
+          <p class="text-gray-600 mt-2 text-sm">${proj.desc}</p>
+          <div class="flex flex-wrap gap-1 mt-3"><span class="bg-gray-100 text-xs px-2 py-1 rounded">${proj.tech}</span></div>
+          <div class="flex gap-4 mt-5">
+            <a href="${proj.github}" target="_blank" class="text-sm font-medium text-indigo-600 hover:underline">GitHub</a>
+            <a href="${proj.demo}" target="_blank" class="text-sm font-medium text-indigo-600 hover:underline">Live Demo</a>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+      
+      const btns = document.querySelectorAll('#downloadCVBtn, #viewProjectsBtn');
+      btns.forEach(btn => {
+        if (currentMode === 'student') {
+          btn.classList.remove('bg-teal-600', 'border-teal-600', 'text-teal-600', 'hover:bg-teal-700');
+          btn.classList.add('bg-indigo-600', 'border-indigo-600', 'text-indigo-600', 'hover:bg-indigo-700');
+        } else {
+          btn.classList.remove('bg-indigo-600', 'border-indigo-600', 'text-indigo-600', 'hover:bg-indigo-700');
+          btn.classList.add('bg-teal-600', 'border-teal-600', 'text-teal-600', 'hover:bg-teal-700');
+        }
+        if(btn.id === 'downloadCVBtn') btn.classList.add('text-white');
+        else btn.classList.remove('text-white');
+        if(btn.id === 'viewProjectsBtn' && currentMode === 'developer') btn.classList.add('border-teal-600', 'text-teal-600');
+      });
+    }
+
+    document.getElementById('studentModeBtn').addEventListener('click', () => {
+      currentMode = 'student';
+      document.getElementById('studentModeBtn').classList.add('bg-indigo-600', 'text-white');
+      document.getElementById('developerModeBtn').classList.remove('bg-teal-600', 'text-white');
+      document.getElementById('developerModeBtn').classList.add('text-gray-700', 'bg-transparent');
+      updateUIByMode();
+    });
+    document.getElementById('developerModeBtn').addEventListener('click', () => {
+      currentMode = 'developer';
+      document.getElementById('developerModeBtn').classList.add('bg-teal-600', 'text-white');
+      document.getElementById('studentModeBtn').classList.remove('bg-indigo-600', 'text-white');
+      document.getElementById('studentModeBtn').classList.add('text-gray-700', 'bg-transparent');
+      updateUIByMode();
+    });
+    updateUIByMode();
+
+    document.getElementById('downloadCVBtn').addEventListener('click', () => { alert("CV download simulation — actual PDF would be linked."); });
+    document.getElementById('viewProjectsBtn').addEventListener('click', () => { document.querySelector('#projectsGrid').scrollIntoView({ behavior: 'smooth' }); });
+
+    const form = document.getElementById('contactForm');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fb = document.getElementById('formFeedback');
+      fb.classList.remove('hidden');
+      fb.innerText = "✨ Message sent (demo). Omkar will get back to you!";
+      form.reset();
+      setTimeout(() => fb.classList.add('hidden'), 3000);
+    });
+
+    const backBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 600) {
+        backBtn.style.opacity = '1';
+        backBtn.style.pointerEvents = 'auto';
+      } else {
+        backBtn.style.opacity = '0';
+        backBtn.style.pointerEvents = 'none';
+      }
+    });
+    backBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    const cursor = document.getElementById('cursorGlow');
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.opacity = '0.6';
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+    document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
+
+    window.copyToClipboard = (text) => { navigator.clipboard.writeText(text); alert('Copied: ' + text); };
+  </script>
+</body>
+</html>
+```
